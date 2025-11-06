@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { MapPin } from "lucide-react";
-import { useJsApiLoader } from "@react-google-maps/api";
-
-const libraries: ("places")[] = ["places"];
+import { useGoogleMaps } from "./GoogleMapsProvider";
 
 interface SearchAutocompleteProps {
   onPlaceSelect: (place: google.maps.places.PlaceResult) => void;
@@ -13,12 +11,7 @@ interface SearchAutocompleteProps {
 const SearchAutocomplete = ({ onPlaceSelect, placeholder = "Search location..." }: SearchAutocompleteProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
-
-  const { isLoaded } = useJsApiLoader({
-    id: "google-map-script",
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "",
-    libraries,
-  });
+  const { isLoaded } = useGoogleMaps();
 
   useEffect(() => {
     if (isLoaded && inputRef.current && !autocomplete) {

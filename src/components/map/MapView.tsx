@@ -1,9 +1,10 @@
 import { useState, useCallback, useEffect } from "react";
-import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from "@react-google-maps/api";
+import { GoogleMap, Marker, InfoWindow } from "@react-google-maps/api";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, Navigation2, Star, Zap } from "lucide-react";
+import { Navigation2, Star, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useGoogleMaps } from "./GoogleMapsProvider";
 
 const mapContainerStyle = {
   width: "100%",
@@ -66,8 +67,6 @@ const darkMapStyles = [
   },
 ];
 
-const libraries: ("places" | "geometry")[] = ["places", "geometry"];
-
 interface MapViewProps {
   chargers: any[];
   onChargerSelect: (charger: any) => void;
@@ -79,12 +78,8 @@ const MapView = ({ chargers, onChargerSelect, filteredChargers }: MapViewProps) 
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [selectedCharger, setSelectedCharger] = useState<any>(null);
   const [center, setCenter] = useState({ lat: 15.4909, lng: 73.8278 }); // Goa default
-
-  const { isLoaded, loadError } = useJsApiLoader({
-    id: "google-map-script",
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "",
-    libraries,
-  });
+  
+  const { isLoaded } = useGoogleMaps();
 
   useEffect(() => {
     // Get user location
@@ -125,20 +120,8 @@ const MapView = ({ chargers, onChargerSelect, filteredChargers }: MapViewProps) 
     onChargerSelect(charger);
   };
 
-  if (loadError) {
-    return (
-      <div className="h-full flex items-center justify-center bg-muted/50 rounded-2xl">
-        <p className="text-destructive">Error loading maps</p>
-      </div>
-    );
-  }
-
   if (!isLoaded) {
-    return (
-      <div className="h-full flex items-center justify-center bg-muted/50 rounded-2xl">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return null;
   }
 
   return (
