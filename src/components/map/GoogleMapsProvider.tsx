@@ -30,7 +30,7 @@ export const GoogleMapsProvider = ({ children }: GoogleMapsProviderProps) => {
 
   if (loadError) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex items-center justify-center p-4">
         <p className="text-destructive">Error loading maps</p>
       </div>
     );
@@ -38,7 +38,7 @@ export const GoogleMapsProvider = ({ children }: GoogleMapsProviderProps) => {
 
   if (!isLoaded) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex items-center justify-center p-4">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );

@@ -9,7 +9,6 @@ import MapView from "@/components/map/MapView";
 import MapFilters, { FilterState } from "@/components/map/MapFilters";
 import SearchAutocomplete from "@/components/map/SearchAutocomplete";
 import ChargerDetailSheet from "@/components/map/ChargerDetailSheet";
-import { GoogleMapsProvider } from "@/components/map/GoogleMapsProvider";
 
 interface DriverDashboardProps {
   user: any;
@@ -104,8 +103,7 @@ const DriverDashboard = ({ user, profile }: DriverDashboardProps) => {
   };
 
   return (
-    <GoogleMapsProvider>
-      <div className="pb-20">
+    <div className="pb-20">
       {/* Header */}
       <div className="bg-gradient-card border-b border-border p-6">
         <div className="container mx-auto">
@@ -206,8 +204,7 @@ const DriverDashboard = ({ user, profile }: DriverDashboardProps) => {
       </Link>
 
       <Navigation />
-      </div>
-    </GoogleMapsProvider>
+    </div>
   );
 };
 
