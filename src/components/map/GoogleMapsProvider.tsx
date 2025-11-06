@@ -21,9 +21,10 @@ interface GoogleMapsProviderProps {
 }
 
 export const GoogleMapsProvider = ({ children }: GoogleMapsProviderProps) => {
+  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "";
   const { isLoaded, loadError } = useJsApiLoader({
-    id: "google-map-script",
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "",
+    id: "chargeshare-maps",
+    googleMapsApiKey: apiKey,
     libraries,
   });
 
