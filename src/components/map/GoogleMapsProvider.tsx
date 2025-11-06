@@ -2,7 +2,7 @@ import { createContext, useContext, ReactNode } from "react";
 import { useJsApiLoader } from "@react-google-maps/api";
 import { Loader2 } from "lucide-react";
 
-const libraries: ("places" | "geometry")[] = ["places", "geometry"];
+const libraries: ("places")[] = ["places"];
 
 interface GoogleMapsContextType {
   isLoaded: boolean;
@@ -23,7 +23,7 @@ interface GoogleMapsProviderProps {
 export const GoogleMapsProvider = ({ children }: GoogleMapsProviderProps) => {
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "";
   const { isLoaded, loadError } = useJsApiLoader({
-    id: "chargeshare-maps",
+    id: "google-map-script",
     googleMapsApiKey: apiKey,
     libraries,
   });
