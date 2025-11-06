@@ -25,9 +25,27 @@ const DriverDashboard = ({ user, profile }: DriverDashboardProps) => {
     minRating: 0,
     distance: 50,
   });
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number } | null>(null);
 
   useEffect(() => {
     fetchChargers();
+
+    // Get user location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const location = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+          setUserLocation(location);
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+        }
+      );
+    }
 
     // Set up real-time subscription
     const channel = supabase
@@ -61,6 +79,19 @@ const DriverDashboard = ({ user, profile }: DriverDashboardProps) => {
     }
   };
 
+  // Calculate distance between two coordinates using Haversine formula
+  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+    const R = 6371; // Earth's radius in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+      Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  };
+
   const filteredChargers = useMemo(() => {
     return chargers.filter((charger) => {
       // Connector type filter
@@ -78,10 +109,22 @@ const DriverDashboard = ({ user, profile }: DriverDashboardProps) => {
         return false;
       }
 
-      // Distance filter would need user location - simplified for now
+      // Distance filter
+      if (userLocation && filters.distance < 50) {
+        const distance = calculateDistance(
+          userLocation.lat,
+          userLocation.lng,
+          parseFloat(charger.latitude),
+          parseFloat(charger.longitude)
+        );
+        if (distance > filters.distance) {
+          return false;
+        }
+      }
+
       return true;
     });
-  }, [chargers, filters]);
+  }, [chargers, filters, userLocation]);
 
   const handleChargerSelect = (charger: any) => {
     setSelectedCharger(charger);
@@ -89,8 +132,13 @@ const DriverDashboard = ({ user, profile }: DriverDashboardProps) => {
   };
 
   const handlePlaceSelect = (place: google.maps.places.PlaceResult) => {
-    // Could be used to center map or filter by location
-    console.log("Place selected:", place);
+    if (place.geometry?.location) {
+      const newCenter = {
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng(),
+      };
+      setMapCenter(newCenter);
+    }
   };
 
   const handleClearFilters = () => {
@@ -129,6 +177,8 @@ const DriverDashboard = ({ user, profile }: DriverDashboardProps) => {
             chargers={chargers}
             onChargerSelect={handleChargerSelect}
             filteredChargers={filteredChargers}
+            searchCenter={mapCenter}
+            userLocation={userLocation}
           />
         </div>
 

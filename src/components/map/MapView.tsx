@@ -71,34 +71,31 @@ interface MapViewProps {
   chargers: any[];
   onChargerSelect: (charger: any) => void;
   filteredChargers: any[];
+  searchCenter?: { lat: number; lng: number } | null;
+  userLocation?: { lat: number; lng: number } | null;
 }
 
-const MapView = ({ chargers, onChargerSelect, filteredChargers }: MapViewProps) => {
+const MapView = ({ chargers, onChargerSelect, filteredChargers, searchCenter, userLocation: propUserLocation }: MapViewProps) => {
   const [map, setMap] = useState<google.maps.Map | null>(null);
-  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [selectedCharger, setSelectedCharger] = useState<any>(null);
   const [center, setCenter] = useState({ lat: 15.4909, lng: 73.8278 }); // Goa default
   
   const { isLoaded } = useGoogleMaps();
 
+  // Use user location from props or default center
   useEffect(() => {
-    // Get user location
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const location = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          };
-          setUserLocation(location);
-          setCenter(location);
-        },
-        (error) => {
-          console.error("Error getting location:", error);
-        }
-      );
+    if (propUserLocation) {
+      setCenter(propUserLocation);
     }
-  }, []);
+  }, [propUserLocation]);
+
+  // Pan to search location when it changes
+  useEffect(() => {
+    if (map && searchCenter) {
+      map.panTo(searchCenter);
+      map.setZoom(15);
+    }
+  }, [map, searchCenter]);
 
   const onLoad = useCallback((map: google.maps.Map) => {
     setMap(map);
@@ -109,8 +106,8 @@ const MapView = ({ chargers, onChargerSelect, filteredChargers }: MapViewProps) 
   }, []);
 
   const handleRecenter = () => {
-    if (map && userLocation) {
-      map.panTo(userLocation);
+    if (map && propUserLocation) {
+      map.panTo(propUserLocation);
       map.setZoom(14);
     }
   };
@@ -140,9 +137,9 @@ const MapView = ({ chargers, onChargerSelect, filteredChargers }: MapViewProps) 
         }}
       >
         {/* User location marker */}
-        {userLocation && (
+        {propUserLocation && (
           <Marker
-            position={userLocation}
+            position={propUserLocation}
             icon={{
               path: google.maps.SymbolPath.CIRCLE,
               scale: 8,
@@ -217,7 +214,7 @@ const MapView = ({ chargers, onChargerSelect, filteredChargers }: MapViewProps) 
       </GoogleMap>
 
       {/* Recenter button */}
-      {userLocation && (
+      {propUserLocation && (
         <Button
           onClick={handleRecenter}
           size="icon"
