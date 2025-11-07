@@ -12,7 +12,6 @@ import { Loader2 } from "lucide-react";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [role, setRole] = useState<"owner" | "driver">("driver");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -29,7 +28,7 @@ const Auth = () => {
       email,
       password,
       options: {
-        data: { name, role },
+        data: { name, role: "driver" },
         emailRedirectTo: `${window.location.origin}/dashboard`,
       },
     });
@@ -162,23 +161,6 @@ const Auth = () => {
                     required
                     className="bg-muted/50 border-border focus:ring-primary"
                   />
-                </div>
-                <div className="space-y-2">
-                  <Label>I am a:</Label>
-                  <RadioGroup value={role} onValueChange={(value: any) => setRole(value)}>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="driver" id="driver" />
-                      <Label htmlFor="driver" className="font-normal cursor-pointer">
-                        EV Driver (looking for chargers)
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="owner" id="owner" />
-                      <Label htmlFor="owner" className="font-normal cursor-pointer">
-                        Charger Owner (renting out chargers)
-                      </Label>
-                    </div>
-                  </RadioGroup>
                 </div>
                 <Button
                   type="submit"
