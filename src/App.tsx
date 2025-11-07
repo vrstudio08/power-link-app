@@ -10,6 +10,8 @@ import Dashboard from "./pages/Dashboard";
 import AddAsset from "./pages/AddAsset";
 import Bookings from "./pages/Bookings";
 import Profile from "./pages/Profile";
+import Book from "./pages/Book";
+import NavigationView from "./pages/NavigationView";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +30,8 @@ const App = () => (
             <Route path="/add" element={<AddAsset />} />
             <Route path="/bookings" element={<Bookings />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/book/:id" element={<Book />} />
+            <Route path="/navigate/:id" element={<NavigationView />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

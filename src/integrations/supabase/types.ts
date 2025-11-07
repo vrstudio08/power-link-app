@@ -139,6 +139,27 @@ export type Database = {
           },
         ]
       }
+      favorites: {
+        Row: {
+          charger_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          charger_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          charger_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string

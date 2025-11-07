@@ -24,27 +24,45 @@ const connectorTypes = ["All", "Type 2", "CCS", "CHAdeMO", "GB/T"];
 
 const MapFilters = ({ filters, onFiltersChange, onClearFilters }: MapFiltersProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [tempFilters, setTempFilters] = useState<FilterState>(filters);
 
   const hasActiveFilters = 
-    filters.connectorType !== "All" || 
-    filters.maxPrice < 500 || 
-    filters.minRating > 0 || 
-    filters.distance < 50;
+    tempFilters.connectorType !== "All" || 
+    tempFilters.maxPrice < 500 || 
+    tempFilters.minRating > 0 || 
+    tempFilters.distance < 50;
 
   const handleConnectorChange = (value: string) => {
-    onFiltersChange({ ...filters, connectorType: value });
+    setTempFilters({ ...tempFilters, connectorType: value });
   };
 
   const handlePriceChange = (value: number[]) => {
-    onFiltersChange({ ...filters, maxPrice: value[0] });
+    setTempFilters({ ...tempFilters, maxPrice: value[0] });
   };
 
   const handleRatingChange = (value: number[]) => {
-    onFiltersChange({ ...filters, minRating: value[0] });
+    setTempFilters({ ...tempFilters, minRating: value[0] });
   };
 
   const handleDistanceChange = (value: number[]) => {
-    onFiltersChange({ ...filters, distance: value[0] });
+    setTempFilters({ ...tempFilters, distance: value[0] });
+  };
+
+  const handleApplyFilters = () => {
+    onFiltersChange(tempFilters);
+    setIsOpen(false);
+  };
+
+  const handleClearFilters = () => {
+    const defaultFilters = {
+      connectorType: "All",
+      maxPrice: 500,
+      minRating: 0,
+      distance: 50,
+    };
+    setTempFilters(defaultFilters);
+    onFiltersChange(defaultFilters);
+    onClearFilters();
   };
 
   return (
@@ -71,7 +89,7 @@ const MapFilters = ({ filters, onFiltersChange, onClearFilters }: MapFiltersProp
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={onClearFilters}
+                onClick={handleClearFilters}
                 className="text-muted-foreground hover:text-foreground"
               >
                 <X className="h-4 w-4 mr-1" />
@@ -85,7 +103,7 @@ const MapFilters = ({ filters, onFiltersChange, onClearFilters }: MapFiltersProp
           {/* Connector Type */}
           <div>
             <Label className="mb-3 block">Connector Type</Label>
-            <Select value={filters.connectorType} onValueChange={handleConnectorChange}>
+            <Select value={tempFilters.connectorType} onValueChange={handleConnectorChange}>
               <SelectTrigger className="bg-muted/50 border-border">
                 <SelectValue />
               </SelectTrigger>
@@ -102,10 +120,10 @@ const MapFilters = ({ filters, onFiltersChange, onClearFilters }: MapFiltersProp
           {/* Max Price */}
           <div>
             <Label className="mb-3 block">
-              Max Price: ₹{filters.maxPrice}/hr
+              Max Price: ₹{tempFilters.maxPrice}/hr
             </Label>
             <Slider
-              value={[filters.maxPrice]}
+              value={[tempFilters.maxPrice]}
               onValueChange={handlePriceChange}
               max={500}
               min={50}
@@ -117,10 +135,10 @@ const MapFilters = ({ filters, onFiltersChange, onClearFilters }: MapFiltersProp
           {/* Min Rating */}
           <div>
             <Label className="mb-3 block">
-              Min Rating: {filters.minRating === 0 ? "Any" : `${filters.minRating}★`}
+              Min Rating: {tempFilters.minRating === 0 ? "Any" : `${tempFilters.minRating}★`}
             </Label>
             <Slider
-              value={[filters.minRating]}
+              value={[tempFilters.minRating]}
               onValueChange={handleRatingChange}
               max={5}
               min={0}
@@ -132,10 +150,10 @@ const MapFilters = ({ filters, onFiltersChange, onClearFilters }: MapFiltersProp
           {/* Distance */}
           <div>
             <Label className="mb-3 block">
-              Distance: {filters.distance === 50 ? "50+ km" : `${filters.distance} km`}
+              Distance: {tempFilters.distance === 50 ? "50+ km" : `${tempFilters.distance} km`}
             </Label>
             <Slider
-              value={[filters.distance]}
+              value={[tempFilters.distance]}
               onValueChange={handleDistanceChange}
               max={50}
               min={5}
@@ -144,6 +162,15 @@ const MapFilters = ({ filters, onFiltersChange, onClearFilters }: MapFiltersProp
             />
           </div>
 
+          {/* Apply Button */}
+          <Button
+            onClick={handleApplyFilters}
+            className="w-full rounded-full bg-primary hover:bg-primary/90 shadow-glow-green"
+            size="lg"
+          >
+            Apply Filters
+          </Button>
+
           {/* Active Filters Summary */}
           {hasActiveFilters && (
             <div className="pt-4 border-t border-border">
@@ -151,17 +178,17 @@ const MapFilters = ({ filters, onFiltersChange, onClearFilters }: MapFiltersProp
                 Active Filters:
               </Label>
               <div className="flex flex-wrap gap-2">
-                {filters.connectorType !== "All" && (
-                  <Badge variant="secondary">{filters.connectorType}</Badge>
+                {tempFilters.connectorType !== "All" && (
+                  <Badge variant="secondary">{tempFilters.connectorType}</Badge>
                 )}
-                {filters.maxPrice < 500 && (
-                  <Badge variant="secondary">Max ₹{filters.maxPrice}</Badge>
+                {tempFilters.maxPrice < 500 && (
+                  <Badge variant="secondary">Max ₹{tempFilters.maxPrice}</Badge>
                 )}
-                {filters.minRating > 0 && (
-                  <Badge variant="secondary">Min {filters.minRating}★</Badge>
+                {tempFilters.minRating > 0 && (
+                  <Badge variant="secondary">Min {tempFilters.minRating}★</Badge>
                 )}
-                {filters.distance < 50 && (
-                  <Badge variant="secondary">Within {filters.distance}km</Badge>
+                {tempFilters.distance < 50 && (
+                  <Badge variant="secondary">Within {tempFilters.distance}km</Badge>
                 )}
               </div>
             </div>
