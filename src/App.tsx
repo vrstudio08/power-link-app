@@ -12,6 +12,7 @@ import Bookings from "./pages/Bookings";
 import Profile from "./pages/Profile";
 import Book from "./pages/Book";
 import NavigationView from "./pages/NavigationView";
+import ShareTrip from "./pages/ShareTrip";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/profile" element={<Profile />} />
             <Route path="/book/:id" element={<Book />} />
             <Route path="/navigate/:id" element={<NavigationView />} />
+            <Route path="/share/:token" element={<ShareTrip />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

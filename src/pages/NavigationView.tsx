@@ -4,8 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { GoogleMap, Marker, DirectionsRenderer } from "@react-google-maps/api";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, Navigation2, Phone } from "lucide-react";
+import { ArrowLeft, Navigation2, Phone, Share2 } from "lucide-react";
 import { useGoogleMaps } from "@/components/map/GoogleMapsProvider";
+import { toast } from "sonner";
 
 const mapContainerStyle = {
   width: "100%",
@@ -18,12 +19,20 @@ const NavigationView = () => {
   const [charger, setCharger] = useState<any>(null);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
+  const [shareToken, setShareToken] = useState<string | null>(null);
+  const [isSharing, setIsSharing] = useState(false);
   const { isLoaded } = useGoogleMaps();
 
   useEffect(() => {
     if (id) fetchCharger();
     getUserLocation();
   }, [id]);
+
+  useEffect(() => {
+    if (shareToken && userLocation && directions) {
+      updateSharedLocation();
+    }
+  }, [userLocation, shareToken]);
 
   const fetchCharger = async () => {
     const { data } = await supabase
@@ -72,6 +81,95 @@ const NavigationView = () => {
       setDirections(result);
     } catch (error) {
       console.error("Error calculating route:", error);
+    }
+  };
+
+  const handleShare = async () => {
+    if (!charger || !userLocation) return;
+
+    setIsSharing(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("Please login to share");
+        return;
+      }
+
+      const token = crypto.randomUUID();
+      const { data, error } = await supabase
+        .from("trip_shares")
+        .insert({
+          charger_id: id,
+          user_id: user.id,
+          share_token: token,
+          current_latitude: userLocation.lat,
+          current_longitude: userLocation.lng,
+          destination_latitude: parseFloat(charger.latitude),
+          destination_longitude: parseFloat(charger.longitude),
+          eta_minutes: directions?.routes[0].legs[0].duration?.value 
+            ? Math.round(directions.routes[0].legs[0].duration.value / 60) 
+            : null,
+          distance_remaining_km: directions?.routes[0].legs[0].distance?.value
+            ? parseFloat((directions.routes[0].legs[0].distance.value / 1000).toFixed(2))
+            : null,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setShareToken(token);
+      const shareUrl = `${window.location.origin}/share/${token}`;
+
+      if (navigator.share) {
+        await navigator.share({
+          title: `I'm heading to ${charger.title}`,
+          text: `Track my location and ETA to ${charger.address}`,
+          url: shareUrl,
+        });
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success("Share link copied to clipboard!");
+      }
+    } catch (error) {
+      console.error("Error sharing:", error);
+      toast.error("Failed to share location");
+    } finally {
+      setIsSharing(false);
+    }
+  };
+
+  const updateSharedLocation = async () => {
+    if (!shareToken || !userLocation || !directions) return;
+
+    try {
+      await supabase
+        .from("trip_shares")
+        .update({
+          current_latitude: userLocation.lat,
+          current_longitude: userLocation.lng,
+          eta_minutes: Math.round(directions.routes[0].legs[0].duration?.value / 60),
+          distance_remaining_km: parseFloat((directions.routes[0].legs[0].distance?.value / 1000).toFixed(2)),
+        })
+        .eq("share_token", shareToken);
+    } catch (error) {
+      console.error("Error updating location:", error);
+    }
+  };
+
+  const stopSharing = async () => {
+    if (!shareToken) return;
+
+    try {
+      await supabase
+        .from("trip_shares")
+        .update({ is_active: false })
+        .eq("share_token", shareToken);
+      
+      setShareToken(null);
+      toast.success("Stopped sharing location");
+    } catch (error) {
+      console.error("Error stopping share:", error);
     }
   };
 
@@ -141,14 +239,36 @@ const NavigationView = () => {
 
       {/* Top bar */}
       <div className="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-background to-transparent z-10 safe-top">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => navigate("/dashboard")}
-          className="bg-card/95 backdrop-blur-sm shadow-lg"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
+        <div className="flex items-center justify-between">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate("/dashboard")}
+            className="bg-card/95 backdrop-blur-sm shadow-lg"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          {shareToken ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={stopSharing}
+              className="bg-card/95 backdrop-blur-sm shadow-lg text-destructive"
+            >
+              Stop Sharing
+            </Button>
+          ) : (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleShare}
+              disabled={isSharing}
+              className="bg-card/95 backdrop-blur-sm shadow-lg"
+            >
+              <Share2 className="h-5 w-5" />
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Bottom info card */}
