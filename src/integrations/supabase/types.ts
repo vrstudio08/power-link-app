@@ -239,6 +239,65 @@ export type Database = {
           },
         ]
       }
+      trip_shares: {
+        Row: {
+          charger_id: string
+          created_at: string
+          current_latitude: number | null
+          current_longitude: number | null
+          destination_latitude: number
+          destination_longitude: number
+          distance_remaining_km: number | null
+          eta_minutes: number | null
+          expires_at: string
+          id: string
+          is_active: boolean
+          share_token: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          charger_id: string
+          created_at?: string
+          current_latitude?: number | null
+          current_longitude?: number | null
+          destination_latitude: number
+          destination_longitude: number
+          distance_remaining_km?: number | null
+          eta_minutes?: number | null
+          expires_at?: string
+          id?: string
+          is_active?: boolean
+          share_token: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          charger_id?: string
+          created_at?: string
+          current_latitude?: number | null
+          current_longitude?: number | null
+          destination_latitude?: number
+          destination_longitude?: number
+          distance_remaining_km?: number | null
+          eta_minutes?: number | null
+          expires_at?: string
+          id?: string
+          is_active?: boolean
+          share_token?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_trip_shares_charger"
+            columns: ["charger_id"]
+            isOneToOne: false
+            referencedRelation: "chargers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       vehicles: {
         Row: {
           battery_capacity: number
