@@ -9,7 +9,7 @@ import { useGoogleMaps } from "@/components/map/GoogleMapsProvider";
 
 const mapContainerStyle = {
   width: "100%",
-  height: "100vh",
+  height: "100dvh",
 };
 
 const NavigationView = () => {
@@ -59,16 +59,20 @@ const NavigationView = () => {
     if (!userLocation || !isLoaded) return;
 
     const directionsService = new google.maps.DirectionsService();
-    const result = await directionsService.route({
-      origin: userLocation,
-      destination: {
-        lat: parseFloat(chargerData.latitude),
-        lng: parseFloat(chargerData.longitude),
-      },
-      travelMode: google.maps.TravelMode.DRIVING,
-    });
+    try {
+      const result = await directionsService.route({
+        origin: userLocation,
+        destination: {
+          lat: parseFloat(chargerData.latitude),
+          lng: parseFloat(chargerData.longitude),
+        },
+        travelMode: google.maps.TravelMode.DRIVING,
+      });
 
-    setDirections(result);
+      setDirections(result);
+    } catch (error) {
+      console.error("Error calculating route:", error);
+    }
   };
 
   if (!isLoaded || !charger || !userLocation) {
@@ -136,43 +140,43 @@ const NavigationView = () => {
       </GoogleMap>
 
       {/* Top bar */}
-      <div className="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-background to-transparent">
+      <div className="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-background to-transparent z-10 safe-top">
         <Button
           variant="ghost"
           size="icon"
           onClick={() => navigate("/dashboard")}
-          className="bg-card/95 backdrop-blur-sm"
+          className="bg-card/95 backdrop-blur-sm shadow-lg"
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
       </div>
 
       {/* Bottom info card */}
-      <div className="absolute bottom-0 left-0 right-0 p-4">
-        <Card className="p-6 bg-card/95 backdrop-blur-sm border-border shadow-glow-green">
-          <div className="flex items-start justify-between mb-4">
-            <div>
-              <h2 className="text-2xl font-bold mb-2">{charger.title}</h2>
-              <p className="text-muted-foreground">{charger.address}</p>
+      <div className="absolute bottom-0 left-0 right-0 p-4 safe-bottom z-10">
+        <Card className="p-4 md:p-6 bg-card/95 backdrop-blur-sm border-border shadow-lg">
+          <div className="flex items-start justify-between mb-3">
+            <div className="flex-1 min-w-0">
+              <h2 className="text-lg md:text-2xl font-bold mb-1 truncate">{charger.title}</h2>
+              <p className="text-sm text-muted-foreground line-clamp-2">{charger.address}</p>
             </div>
             <Button
               size="icon"
-              className="rounded-full bg-primary hover:bg-primary/90"
+              className="rounded-full bg-primary hover:bg-primary/90 flex-shrink-0 ml-2"
               onClick={() => window.open(`tel:${charger.profiles?.email}`)}
             >
-              <Phone className="h-5 w-5" />
+              <Phone className="h-4 w-4 md:h-5 md:w-5" />
             </Button>
           </div>
 
           {directions && (
-            <div className="flex items-center justify-between text-sm">
-              <div>
+            <div className="flex items-center justify-between text-xs md:text-sm gap-4">
+              <div className="flex-1">
                 <span className="text-muted-foreground">Distance: </span>
                 <span className="font-semibold">
                   {directions.routes[0].legs[0].distance?.text}
                 </span>
               </div>
-              <div>
+              <div className="flex-1">
                 <span className="text-muted-foreground">ETA: </span>
                 <span className="font-semibold">
                   {directions.routes[0].legs[0].duration?.text}

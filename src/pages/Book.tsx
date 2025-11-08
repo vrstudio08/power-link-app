@@ -109,57 +109,57 @@ const Book = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <div className="bg-gradient-card border-b border-border p-6">
+    <div className="min-h-screen bg-background pb-20 safe-bottom">
+      <div className="bg-gradient-card border-b border-border p-4 md:p-6 safe-top">
         <div className="container mx-auto">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => navigate(-1)}
-            className="mb-4"
+            className="mb-3 md:mb-4"
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-3xl font-bold mb-2">Book Charger</h1>
-          <p className="text-muted-foreground">{charger.title}</p>
+          <h1 className="text-2xl md:text-3xl font-bold mb-1 md:mb-2">Book Charger</h1>
+          <p className="text-sm md:text-base text-muted-foreground">{charger.title}</p>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-6 max-w-2xl">
-        <Card className="p-6 bg-gradient-card backdrop-blur-sm border-border shadow-card mb-6">
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <MapPin className="h-4 w-4" />
-              <span>{charger.address}</span>
+      <div className="container mx-auto px-4 py-4 md:py-6 max-w-2xl">
+        <Card className="p-4 md:p-6 bg-gradient-card backdrop-blur-sm border-border shadow-card mb-4 md:mb-6">
+          <div className="space-y-3 md:space-y-4">
+            <div className="flex items-center gap-2 text-sm md:text-base text-muted-foreground">
+              <MapPin className="h-4 w-4 flex-shrink-0" />
+              <span className="line-clamp-2">{charger.address}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Zap className="h-4 w-4 text-primary" />
+            <div className="flex items-center gap-2 text-sm md:text-base">
+              <Zap className="h-4 w-4 text-primary flex-shrink-0" />
               <span>{charger.power_output_kw} kW</span>
             </div>
-            <div className="text-2xl font-semibold text-primary">
+            <div className="text-xl md:text-2xl font-semibold text-primary">
               ₹{charger.price_per_hour}/hr
             </div>
           </div>
         </Card>
 
-        <Card className="p-6 bg-gradient-card backdrop-blur-sm border-border shadow-card mb-6">
-          <div className="space-y-6">
+        <Card className="p-4 md:p-6 bg-gradient-card backdrop-blur-sm border-border shadow-card mb-4 md:mb-6">
+          <div className="space-y-4 md:space-y-6">
             <div>
-              <Label className="mb-3 block">Select Date</Label>
+              <Label className="mb-2 md:mb-3 block text-sm md:text-base">Select Date</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
                     className={cn(
-                      "w-full justify-start text-left font-normal",
+                      "w-full justify-start text-left font-normal text-sm md:text-base",
                       !date && "text-muted-foreground"
                     )}
                   >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    <CalendarIcon className="mr-2 h-4 w-4 flex-shrink-0" />
                     {date ? format(date, "PPP") : "Pick a date"}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
+                <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
                     selected={date}
@@ -171,58 +171,58 @@ const Book = () => {
               </Popover>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3 md:gap-4">
               <div>
-                <Label className="mb-3 block">Start Time</Label>
+                <Label className="mb-2 md:mb-3 block text-sm md:text-base">Start Time</Label>
                 <input
                   type="time"
                   value={startTime}
                   onChange={(e) => setStartTime(e.target.value)}
-                  className="w-full px-3 py-2 bg-muted border border-border rounded-lg"
+                  className="w-full px-3 py-2 text-sm md:text-base bg-muted border border-border rounded-lg"
                 />
               </div>
               <div>
-                <Label className="mb-3 block">End Time</Label>
+                <Label className="mb-2 md:mb-3 block text-sm md:text-base">End Time</Label>
                 <input
                   type="time"
                   value={endTime}
                   onChange={(e) => setEndTime(e.target.value)}
-                  className="w-full px-3 py-2 bg-muted border border-border rounded-lg"
+                  className="w-full px-3 py-2 text-sm md:text-base bg-muted border border-border rounded-lg"
                 />
               </div>
             </div>
 
             <div>
-              <Label className="mb-3 block">Payment Method</Label>
+              <Label className="mb-2 md:mb-3 block text-sm md:text-base">Payment Method</Label>
               <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
-                <div className="flex items-center space-x-2 p-3 bg-muted rounded-lg">
+                <div className="flex items-center space-x-2 p-2.5 md:p-3 bg-muted rounded-lg">
                   <RadioGroupItem value="upi" id="upi" />
-                  <Label htmlFor="upi" className="cursor-pointer flex-1">UPI</Label>
+                  <Label htmlFor="upi" className="cursor-pointer flex-1 text-sm md:text-base">UPI</Label>
                 </div>
-                <div className="flex items-center space-x-2 p-3 bg-muted rounded-lg">
+                <div className="flex items-center space-x-2 p-2.5 md:p-3 bg-muted rounded-lg">
                   <RadioGroupItem value="card" id="card" />
-                  <Label htmlFor="card" className="cursor-pointer flex-1">Card</Label>
+                  <Label htmlFor="card" className="cursor-pointer flex-1 text-sm md:text-base">Card</Label>
                 </div>
-                <div className="flex items-center space-x-2 p-3 bg-muted rounded-lg">
+                <div className="flex items-center space-x-2 p-2.5 md:p-3 bg-muted rounded-lg">
                   <RadioGroupItem value="wallet" id="wallet" />
-                  <Label htmlFor="wallet" className="cursor-pointer flex-1">Wallet</Label>
+                  <Label htmlFor="wallet" className="cursor-pointer flex-1 text-sm md:text-base">Wallet</Label>
                 </div>
               </RadioGroup>
             </div>
           </div>
         </Card>
 
-        <Card className="p-6 bg-gradient-card backdrop-blur-sm border-border shadow-card mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-muted-foreground">Total Amount</span>
-            <span className="text-3xl font-bold text-primary">
+        <Card className="p-4 md:p-6 bg-gradient-card backdrop-blur-sm border-border shadow-card mb-4 md:mb-6">
+          <div className="flex items-center justify-between mb-3 md:mb-4">
+            <span className="text-sm md:text-base text-muted-foreground">Total Amount</span>
+            <span className="text-2xl md:text-3xl font-bold text-primary">
               ₹{calculateAmount().toFixed(2)}
             </span>
           </div>
           <Button
             onClick={handleBooking}
             disabled={loading}
-            className="w-full rounded-full bg-primary hover:bg-primary/90 shadow-glow-green"
+            className="w-full rounded-full bg-primary hover:bg-primary/90 shadow-glow-green text-sm md:text-base"
             size="lg"
           >
             {loading ? "Processing..." : "Confirm Booking"}
