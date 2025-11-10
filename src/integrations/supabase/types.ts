@@ -71,19 +71,24 @@ export type Database = {
       chargers: {
         Row: {
           address: string
+          amenities: Json | null
           availability_end: string | null
           availability_start: string | null
+          charging_fee_type: string | null
           company: string | null
           connector_type: string
+          contact_number: string | null
           created_at: string
           description: string | null
           id: string
+          images: string[] | null
           is_active: boolean
           latitude: number
           longitude: number
           owner_id: string
           parking_type: string | null
           power_output_kw: number
+          power_source: string | null
           price_per_hour: number
           rating_avg: number | null
           title: string
@@ -91,19 +96,24 @@ export type Database = {
         }
         Insert: {
           address: string
+          amenities?: Json | null
           availability_end?: string | null
           availability_start?: string | null
+          charging_fee_type?: string | null
           company?: string | null
           connector_type: string
+          contact_number?: string | null
           created_at?: string
           description?: string | null
           id?: string
+          images?: string[] | null
           is_active?: boolean
           latitude: number
           longitude: number
           owner_id: string
           parking_type?: string | null
           power_output_kw: number
+          power_source?: string | null
           price_per_hour: number
           rating_avg?: number | null
           title: string
@@ -111,19 +121,24 @@ export type Database = {
         }
         Update: {
           address?: string
+          amenities?: Json | null
           availability_end?: string | null
           availability_start?: string | null
+          charging_fee_type?: string | null
           company?: string | null
           connector_type?: string
+          contact_number?: string | null
           created_at?: string
           description?: string | null
           id?: string
+          images?: string[] | null
           is_active?: boolean
           latitude?: number
           longitude?: number
           owner_id?: string
           parking_type?: string | null
           power_output_kw?: number
+          power_source?: string | null
           price_per_hour?: number
           rating_avg?: number | null
           title?: string
@@ -303,40 +318,61 @@ export type Database = {
           battery_capacity: number
           bms_protocol: string | null
           charging_preferences: string | null
+          color: string | null
           company: string
           connector_type: string
           created_at: string
+          ev_type: string | null
           id: string
           model: string
+          model_year: number | null
           owner_id: string
           plate_number: string | null
           power_output: number | null
+          preferred_charger_power: number | null
+          range_km: number | null
+          vehicle_image: string | null
+          vehicle_name: string | null
         }
         Insert: {
           battery_capacity: number
           bms_protocol?: string | null
           charging_preferences?: string | null
+          color?: string | null
           company: string
           connector_type: string
           created_at?: string
+          ev_type?: string | null
           id?: string
           model: string
+          model_year?: number | null
           owner_id: string
           plate_number?: string | null
           power_output?: number | null
+          preferred_charger_power?: number | null
+          range_km?: number | null
+          vehicle_image?: string | null
+          vehicle_name?: string | null
         }
         Update: {
           battery_capacity?: number
           bms_protocol?: string | null
           charging_preferences?: string | null
+          color?: string | null
           company?: string
           connector_type?: string
           created_at?: string
+          ev_type?: string | null
           id?: string
           model?: string
+          model_year?: number | null
           owner_id?: string
           plate_number?: string | null
           power_output?: number | null
+          preferred_charger_power?: number | null
+          range_km?: number | null
+          vehicle_image?: string | null
+          vehicle_name?: string | null
         }
         Relationships: [
           {
