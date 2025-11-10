@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,6 +14,8 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+  const intent = searchParams.get('intent') || 'driver';
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -24,12 +26,17 @@ const Auth = () => {
     const password = formData.get("password") as string;
     const name = formData.get("name") as string;
 
-    const { error } = await supabase.auth.signUp({
+    const role = intent === 'owner' ? 'owner' : 'driver';
+
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: { name, role: "driver" },
-        emailRedirectTo: `${window.location.origin}/dashboard`,
+        data: {
+          name,
+          role,
+        },
+        emailRedirectTo: `${window.location.origin}/`,
       },
     });
 
@@ -41,12 +48,18 @@ const Auth = () => {
         description: error.message,
         variant: "destructive",
       });
-    } else {
+      return;
+    }
+
+    if (data?.user) {
       toast({
         title: "Success!",
-        description: "Account created. Redirecting to dashboard...",
+        description: "Your account has been created. Welcome!",
       });
-      navigate("/dashboard");
+      
+      // Redirect to add page with appropriate tab
+      const addType = intent === 'owner' ? 'charger' : 'vehicle';
+      navigate(`/add?type=${addType}`);
     }
   };
 

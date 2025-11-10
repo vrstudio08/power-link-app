@@ -31,11 +31,13 @@ const DriverDashboard = ({ user, profile }: DriverDashboardProps) => {
   const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number } | null>(null);
   const [locationGranted, setLocationGranted] = useState(false);
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const [userVehicles, setUserVehicles] = useState<any[]>([]);
 
   useEffect(() => {
     if (locationGranted) {
       fetchChargers();
       fetchFavorites();
+      fetchUserVehicles();
     }
 
     // Set up real-time subscription
@@ -79,6 +81,25 @@ const DriverDashboard = ({ user, profile }: DriverDashboardProps) => {
 
     if (data) {
       setFavorites(new Set(data.map((f) => f.charger_id)));
+    }
+  };
+
+  const fetchUserVehicles = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from("vehicles")
+      .select("*")
+      .eq("owner_id", user.id);
+
+    if (data && data.length > 0) {
+      setUserVehicles(data);
+      // Auto-set connector type filter to match user's vehicle
+      if (data[0].connector_type) {
+        setFilters((prev) => ({
+          ...prev,
+          connectorType: data[0].connector_type,
+        }));
+      }
     }
   };
 
