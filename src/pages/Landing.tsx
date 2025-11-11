@@ -160,13 +160,13 @@ const Landing = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link to="/auth?intent=driver">
+            <Link to="/auth?type=vehicle">
               <Button size="lg" className="rounded-full px-8 py-6 text-lg bg-primary hover:bg-primary/90 shadow-glow-green hover:shadow-glow-cyan transition-all">
                 Find a Charger
                 <ArrowRight className="ml-2" />
               </Button>
             </Link>
-            <Link to="/auth?intent=owner">
+            <Link to="/auth?type=charger">
               <Button size="lg" variant="outline" className="rounded-full px-8 py-6 text-lg border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all">
                 List Your Charger
               </Button>

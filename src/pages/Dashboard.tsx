@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import DriverDashboard from "@/components/dashboard/DriverDashboard";
-import OwnerDashboard from "@/components/dashboard/OwnerDashboard";
 import { Loader2 } from "lucide-react";
 
 const Dashboard = () => {
@@ -59,13 +58,10 @@ const Dashboard = () => {
     );
   }
 
-  const isOwner = profile?.role === "owner" || profile?.role === "both";
-  const isDriver = profile?.role === "driver" || profile?.role === "both";
-
+  // All users can access all features now
   return (
     <div className="min-h-screen bg-background">
-      {isDriver && <DriverDashboard user={user} profile={profile} />}
-      {isOwner && !isDriver && <OwnerDashboard user={user} profile={profile} />}
+      <DriverDashboard user={user} profile={profile} />
     </div>
   );
 };

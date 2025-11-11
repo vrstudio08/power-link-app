@@ -15,7 +15,7 @@ const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
-  const intent = searchParams.get('intent') || 'driver';
+  const addType = searchParams.get('type'); // 'vehicle' or 'charger' for optional redirect
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -26,15 +26,12 @@ const Auth = () => {
     const password = formData.get("password") as string;
     const name = formData.get("name") as string;
 
-    const role = intent === 'owner' ? 'owner' : 'driver';
-
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: {
           name,
-          role,
         },
         emailRedirectTo: `${window.location.origin}/`,
       },
@@ -57,9 +54,12 @@ const Auth = () => {
         description: "Your account has been created. Welcome!",
       });
       
-      // Redirect to add page with appropriate tab
-      const addType = intent === 'owner' ? 'charger' : 'vehicle';
-      navigate(`/add?type=${addType}`);
+      // Redirect to add page if type specified, otherwise dashboard
+      if (addType) {
+        navigate(`/add?type=${addType}`);
+      } else {
+        navigate('/dashboard');
+      }
     }
   };
 
