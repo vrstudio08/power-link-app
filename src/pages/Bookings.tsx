@@ -2,11 +2,25 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, MapPin } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Calendar, Clock, MapPin, Trash2 } from "lucide-react";
 import Navigation from "@/components/Navigation";
+import { useToast } from "@/hooks/use-toast";
 
 const Bookings = () => {
   const [bookings, setBookings] = useState<any[]>([]);
+  const { toast } = useToast();
 
   useEffect(() => {
     fetchBookings();
@@ -24,6 +38,27 @@ const Bookings = () => {
 
     if (!error && data) {
       setBookings(data);
+    }
+  };
+
+  const handleDeleteBooking = async (bookingId: string) => {
+    const { error } = await supabase
+      .from("bookings")
+      .delete()
+      .eq("id", bookingId);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to cancel booking",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Booking cancelled",
+        description: "Your booking has been cancelled successfully",
+      });
+      fetchBookings();
     }
   };
 
@@ -81,8 +116,34 @@ const Bookings = () => {
                   </div>
                 </div>
                 <div className="mt-4 pt-4 border-t border-border flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Amount Paid</span>
-                  <span className="text-lg font-semibold text-primary">₹{booking.amount_paid}</span>
+                  <div>
+                    <span className="text-sm text-muted-foreground">Amount Paid</span>
+                    <span className="text-lg font-semibold text-primary ml-4">₹{booking.amount_paid}</span>
+                  </div>
+                  {booking.status !== "cancelled" && booking.status !== "completed" && (
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="destructive" size="sm">
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Cancel
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Cancel Booking?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to cancel this booking? This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>No, keep it</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDeleteBooking(booking.id)}>
+                            Yes, cancel booking
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  )}
                 </div>
               </Card>
             ))}
